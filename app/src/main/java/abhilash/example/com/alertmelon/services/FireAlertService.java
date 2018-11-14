@@ -1,9 +1,13 @@
 package abhilash.example.com.alertmelon.services;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v4.media.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -16,11 +20,14 @@ import com.pubnub.api.models.consumer.PNStatus;
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult;
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult;
 
+import abhilash.example.com.alertmelon.MainActivity;
+import abhilash.example.com.alertmelon.R;
+
 public class FireAlertService extends Service {
 
     private PubNub mPubNub;
     private final static String channelName= "watermelonChannel";
-    private JsonElement recievedMessageObject;
+    private JsonElement receivedMessageObject;
 
     @Override
     public void onCreate() {
@@ -35,10 +42,18 @@ public class FireAlertService extends Service {
         addListener();
     }
 
+    /**
+     * Start service
+     * @param intent
+     * @param flags
+     * @param startId
+     * @return
+     */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Toast.makeText(this, "Service Started", Toast.LENGTH_SHORT).show();
         Log.i("SERVICE STARTED", "Service started");
+        createNotification();
         return START_STICKY;
     }
 
@@ -76,8 +91,8 @@ public class FireAlertService extends Service {
                     Log.i("SUBSCRIPTION MESSAGE", message.getSubscription());
                 }
 
-                recievedMessageObject = message.getMessage();
-                Log.i("RECEIVED MESSAGE", recievedMessageObject.toString());
+                receivedMessageObject = message.getMessage();
+                Log.i("RECEIVED MESSAGE", receivedMessageObject.toString());
 
                 Log.i("MESSAGE CONTENT", message.getMessage()
                         .getAsJsonObject()
@@ -89,6 +104,22 @@ public class FireAlertService extends Service {
 
             }
         });
+    }
+
+    public void createNotification() {
+        android.support.v4.app.NotificationCompat.Builder mBuilder = new android.support.v4.app.NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.ic_notification_warning)
+                .setContentTitle("Fire Alert")
+                .setContentText("Your House is on Fire")
+                .setPriority(android.support.v4.app.NotificationCompat.PRIORITY_DEFAULT);
+
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        mBuilder.setContentIntent(contentIntent);
+
+        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        manager.notify(0, mBuilder.build());
     }
 
     @Override

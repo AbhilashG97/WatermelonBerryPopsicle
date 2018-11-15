@@ -16,6 +16,10 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.pubnub.api.PubNub;
+import com.pubnub.api.callbacks.SubscribeCallback;
+import com.pubnub.api.models.consumer.PNStatus;
+import com.pubnub.api.models.consumer.pubsub.PNMessageResult;
+import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult;
 
 import abhilash.example.com.alertmelon.MainActivity;
 import abhilash.example.com.alertmelon.R;
@@ -53,7 +57,22 @@ public class FireAlertService extends Service {
      * Listener for PubNub singleton instance
      */
     public void addPubNubListener() {
-        PubNubSingleton.addListener(mPubNub);
+        mPubNub.addListener(new SubscribeCallback() {
+            @Override
+            public void status(PubNub pubnub, PNStatus status) {
+                // Subscribe to channel
+            }
+
+            @Override
+            public void message(PubNub pubnub, PNMessageResult message) {
+
+            }
+
+            @Override
+            public void presence(PubNub pubnub, PNPresenceEventResult presence) {
+
+            }
+        });
     }
 
     /**

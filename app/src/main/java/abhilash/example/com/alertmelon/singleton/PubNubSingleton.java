@@ -14,7 +14,10 @@ import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult;
 public class PubNubSingleton {
 
     public static PubNub mPubNub;
-    private final static String channelName= "watermelonChannel";
+    private final static String ledAlarmChannel = "alarm";
+    private final static String buzzerChannel = "alert";
+    private final static String userSettingsChannel = "user_settings";
+
     private static JsonElement receivedMessageObject;
 
     private PubNubSingleton() {

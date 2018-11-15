@@ -1,45 +1,34 @@
 package abhilash.example.com.alertmelon.services;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.support.v4.media.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.google.gson.JsonElement;
-import com.pubnub.api.PNConfiguration;
 import com.pubnub.api.PubNub;
-import com.pubnub.api.callbacks.SubscribeCallback;
-import com.pubnub.api.enums.PNStatusCategory;
-import com.pubnub.api.models.consumer.PNStatus;
-import com.pubnub.api.models.consumer.pubsub.PNMessageResult;
-import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult;
 
 import abhilash.example.com.alertmelon.MainActivity;
 import abhilash.example.com.alertmelon.R;
+import abhilash.example.com.alertmelon.singleton.PubNubSingleton;
 
 public class FireAlertService extends Service {
 
+    public static boolean isServiceRunning = false;
+    public static final int NOTIFICATION_ID=543;
     private PubNub mPubNub;
-    private final static String channelName= "watermelonChannel";
-    private JsonElement receivedMessageObject;
 
     @Override
     public void onCreate() {
-        PNConfiguration pnConfiguration = new PNConfiguration();
-        pnConfiguration.setSubscribeKey("sub-c-0bbe0cb0-e2b6-11e8-a575-5ee09a206989");
-        pnConfiguration.setPublishKey("pub-c-957647d4-c417-4a35-969f-95d00a04a33f");
-        pnConfiguration.setSecure(false);
-
-        Log.i("SERVICE", "Service created");
-
-        mPubNub = new PubNub(pnConfiguration);
-        addListener();
+        mPubNub = PubNubSingleton.getInstance();
     }
 
     /**
@@ -57,73 +46,58 @@ public class FireAlertService extends Service {
         return START_STICKY;
     }
 
-    /**
-     * Listener for PubNum
-     * Listens for fire alert
-     */
-    public void addListener() {
-        mPubNub.addListener(new SubscribeCallback() {
-            @Override
-            public void status(PubNub pubnub, PNStatus status) {
-                if (status.getCategory() == PNStatusCategory.PNUnexpectedDisconnectCategory) {
-                    /**
-                     * TODO: Handle event when radio/connectivity lost
-                     */
-                } else if (status.getCategory() == PNStatusCategory.PNConnectedCategory) {
-                    // Connected to channel
-                    Log.i("CONNECTED TO CHANNEL", "Yay!Connected to channel");
-                } else if (status.getCategory() == PNStatusCategory.PNReconnectedCategory) {
-                    /**
-                     * TODO: Handle event when radio/connectivity is regained
-                     */
-                } else if (status.getCategory() == PNStatusCategory.PNDecryptionErrorCategory) {
-                    /**
-                     * TODO: Handle decryption event
-                     */
-                }
-            }
-
-            @Override
-            public void message(PubNub pubnub, PNMessageResult message) {
-                if (message.getChannel() != null) {
-                    Log.i("CHANNEL MESSAGE", message.getChannel());
-                } else {
-                    Log.i("SUBSCRIPTION MESSAGE", message.getSubscription());
-                }
-
-                receivedMessageObject = message.getMessage();
-                Log.i("RECEIVED MESSAGE", receivedMessageObject.toString());
-
-                Log.i("MESSAGE CONTENT", message.getMessage()
-                        .getAsJsonObject()
-                        .get("watermelon").getAsString());
-            }
-
-            @Override
-            public void presence(PubNub pubnub, PNPresenceEventResult presence) {
-
-            }
-        });
-    }
 
     public void createNotification() {
-        android.support.v4.app.NotificationCompat.Builder mBuilder = new android.support.v4.app.NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_notification_warning)
-                .setContentTitle("Fire Alert")
-                .setContentText("Your House is on Fire")
-                .setPriority(android.support.v4.app.NotificationCompat.PRIORITY_DEFAULT);
+        if (isServiceRunning) return;
+        isServiceRunning = true;
+
+        android.support.v4.app.NotificationCompat.Builder mBuilder;
+
+        NotificationManager notificationManager = (NotificationManager) this
+                .getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            String chanel_id = "3000";
+            CharSequence name = "Channel Name";
+            String description = "Chanel Description";
+            int importance = NotificationManager.IMPORTANCE_LOW;
+            NotificationChannel mChannel = new NotificationChannel(chanel_id, name, importance);
+            mChannel.setDescription(description);
+            mChannel.enableLights(true);
+            mChannel.setLightColor(Color.BLUE);
+            notificationManager.createNotificationChannel(mChannel);
+            mBuilder = new android.support.v4.app.NotificationCompat.Builder(this, chanel_id);
+        } else {
+            mBuilder = new android.support.v4.app.NotificationCompat.Builder(this);
+        }
 
         Intent notificationIntent = new Intent(this, MainActivity.class);
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent,
+        notificationIntent.setAction("MAIN");
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent contentIntent = PendingIntent.getActivity(this,
+                0,
+                notificationIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
-        mBuilder.setContentIntent(contentIntent);
 
-        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        manager.notify(0, mBuilder.build());
+        mBuilder.setContentIntent(contentIntent);
+        Notification notification = mBuilder.build();
+        notification.flags = notification.flags | Notification.FLAG_NO_CLEAR;
+        mBuilder.setSmallIcon(R.drawable.ic_notification_warning)
+                .setContentTitle("Temperature Alert")
+                .setTicker(getResources().getString(R.string.app_name))
+                .setContentText("Temperature has reached exceedingly high!")
+                .setAutoCancel(true)
+                .setContentIntent(contentIntent)
+                .setOngoing(true);
+        startForeground(NOTIFICATION_ID, notification);
+    }
+
+    public void addPubNubListener() {
+        PubNubSingleton.addListener(mPubNub);
     }
 
     @Override
     public void onDestroy() {
+        isServiceRunning = false;
         Toast.makeText(this, "Service Destroyed", Toast.LENGTH_LONG).show();
     }
 

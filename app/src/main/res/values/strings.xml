@@ -11,4 +11,8 @@
     <string name="logs">Logs</string>
     <string name="tools">Tools</string>
     <string name="about">About</string>
+    <string name="control_alarm_led">Control Alarm LED</string>
+    <string name="alarm_led">Alarm LED</string>
+    <string name="control_the_buzzer">Control the Buzzer</string>
+    <string name="buzzer">Buzzer</string>
 </resources>

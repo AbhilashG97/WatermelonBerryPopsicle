@@ -35,6 +35,10 @@
         <activity
             android:name=".activities.LogsActivity"
             android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".activities.NotificationActivity"
+            android:taskAffinity=""
+            android:excludeFromRecents="true" />
     </application>
 
 </manifest>

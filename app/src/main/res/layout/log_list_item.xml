@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:padding="2dp">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2"
+        android:layout_margin="8dp">
+
+        <TextView
+            android:id="@+id/tv_log_time_stamp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="Log Time Stamp"
+            android:textSize="20sp"
+            android:layout_weight="1"
+            android:layout_marginEnd="16dp"/>
+
+        <TextView
+            android:id="@+id/tv_log_data"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="Log Data"
+            android:textSize="20sp"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
+
+
+</android.support.design.card.MaterialCardView>

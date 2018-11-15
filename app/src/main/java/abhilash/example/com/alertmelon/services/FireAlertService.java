@@ -15,11 +15,15 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.gson.JsonElement;
 import com.pubnub.api.PubNub;
 import com.pubnub.api.callbacks.SubscribeCallback;
+import com.pubnub.api.enums.PNStatusCategory;
 import com.pubnub.api.models.consumer.PNStatus;
 import com.pubnub.api.models.consumer.pubsub.PNMessageResult;
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult;
+
+import java.util.Arrays;
 
 import abhilash.example.com.alertmelon.MainActivity;
 import abhilash.example.com.alertmelon.R;
@@ -31,6 +35,7 @@ public class FireAlertService extends Service {
     public static boolean isServiceRunning = false;
     public static final int NOTIFICATION_ID=543;
     private PubNub mPubNub;
+    private JsonElement receivedMessage;
 
     @Override
     public void onCreate() {
@@ -57,14 +62,40 @@ public class FireAlertService extends Service {
      * Listener for PubNub singleton instance
      */
     public void addPubNubListener() {
+
+        mPubNub.subscribe().channels(Arrays.asList(PubNubSingleton.BUZZER_CHANNEL,
+                PubNubSingleton.LED_ALARM_CHANNEL));
+
         mPubNub.addListener(new SubscribeCallback() {
             @Override
             public void status(PubNub pubnub, PNStatus status) {
                 // Subscribe to channel
+                if (status.getCategory() == PNStatusCategory.PNUnexpectedDisconnectCategory) {
+                    /**
+                     * TODO: Handle event when radio/connectivity lost
+                     */
+                    Log.e("CONNECTION LOST", status.getCategory().toString());
+                } else if (status.getCategory() == PNStatusCategory.PNConnectedCategory) {
+                    // Connected to channel
+                    Log.i("CONNECTED TO CHANNEL", "Yay!Connected to channel");
+
+                } else if (status.getCategory() == PNStatusCategory.PNReconnectedCategory) {
+                    /**
+                     * TODO: Handle event when radio/connectivity is regained
+                     */
+                } else if (status.getCategory() == PNStatusCategory.PNDecryptionErrorCategory) {
+                    /**
+                     * TODO: Handle decryption event
+                     */
+                }
+
             }
 
             @Override
             public void message(PubNub pubnub, PNMessageResult message) {
+                receivedMessage = message.getMessage();
+                Log.i("Received Message", message.getMessage().toString());
+
 
             }
 

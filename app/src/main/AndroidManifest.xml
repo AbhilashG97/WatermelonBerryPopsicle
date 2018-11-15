@@ -29,10 +29,12 @@
             android:name=".services.FireAlertService"
             android:label="FireAlertService" />
 
-        <activity android:name=".activities.ToolsActivity"
-            android:parentActivityName=".MainActivity">
-
-        </activity>
+        <activity
+            android:name=".activities.ToolsActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".activities.LogsActivity"
+            android:parentActivityName=".MainActivity" />
     </application>
 
 </manifest>

@@ -42,12 +42,14 @@ public class FireAlertService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Toast.makeText(this, "Service Started", Toast.LENGTH_SHORT).show();
         Log.i("SERVICE STARTED", "Service started");
-        createNotification();
+        createServiceNotification();
         return START_STICKY;
     }
 
-
-    public void createNotification() {
+    /**
+     * Displays the service that is running in the foreground
+     */
+    public void createServiceNotification() {
         if (isServiceRunning) return;
         isServiceRunning = true;
 
@@ -91,6 +93,16 @@ public class FireAlertService extends Service {
         startForeground(NOTIFICATION_ID, notification);
     }
 
+    /**
+     * Notifies the user when the temperature reaches abnormally hig
+     */
+    public void createAlertNotification() {
+
+    }
+
+    /**
+     * Listener for PubNub singleton
+     */
     public void addPubNubListener() {
         PubNubSingleton.addListener(mPubNub);
     }

@@ -1,16 +1,21 @@
 package abhilash.example.com.alertmelon;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
+import android.widget.Toast;
 
+import abhilash.example.com.alertmelon.activities.LogsActivity;
 import abhilash.example.com.alertmelon.activities.ToolsActivity;
 import abhilash.example.com.alertmelon.services.FireAlertService;
 import butterknife.BindView;
@@ -53,7 +58,17 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            new AlertDialog.Builder(this)
+                    .setTitle("Quit")
+                    .setIcon(R.drawable.ic_notification_warning)
+                    .setMessage("Are you sure you want to exit?")
+                    .setNegativeButton(android.R.string.no, null)
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                        public void onClick(DialogInterface arg0, int arg1) {
+                            finish();
+                        }
+                    }).create().show();
         }
     }
 
@@ -95,14 +110,33 @@ public class MainActivity extends AppCompatActivity
                 startActivity(new Intent(MainActivity.this, ToolsActivity.class));
                 break;
             case R.id.nav_log:
-                // Show log activity
+                startActivity(new Intent(MainActivity.this, LogsActivity.class));
                 break;
             case R.id.nav_about_page:
                 // Show about page
+                createAlertDialog();
             default:
         }
 
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    public void createAlertDialog() {
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setMessage("This is an android client for the Fire Alarm project\n");
+        alertDialogBuilder.setIcon(R.drawable.ic_menu_about);
+        alertDialogBuilder.setTitle("About");
+                alertDialogBuilder.setPositiveButton("Done",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface arg0, int arg1) {
+
+                            }
+                        });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+
 }

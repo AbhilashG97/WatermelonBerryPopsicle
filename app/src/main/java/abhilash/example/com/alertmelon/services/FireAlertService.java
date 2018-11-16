@@ -28,6 +28,7 @@ import java.util.Arrays;
 import abhilash.example.com.alertmelon.MainActivity;
 import abhilash.example.com.alertmelon.R;
 import abhilash.example.com.alertmelon.activities.NotificationActivity;
+import abhilash.example.com.alertmelon.activities.ToolsActivity;
 import abhilash.example.com.alertmelon.singleton.PubNubSingleton;
 
 public class FireAlertService extends Service {
@@ -40,7 +41,7 @@ public class FireAlertService extends Service {
     @Override
     public void onCreate() {
         mPubNub = PubNubSingleton.getInstance();
-        createAlertNotification();
+        addPubNubListener();
     }
 
     /**
@@ -63,8 +64,11 @@ public class FireAlertService extends Service {
      */
     public void addPubNubListener() {
 
+        Log.i("INSIDE PUBNUB LISTENER", "addPubNubListener() invoked");
+
         mPubNub.subscribe().channels(Arrays.asList(PubNubSingleton.BUZZER_CHANNEL,
-                PubNubSingleton.LED_ALARM_CHANNEL));
+                PubNubSingleton.LED_ALARM_CHANNEL, PubNubSingleton.USER_SETTINGS_CHANNEL))
+        .withPresence().execute();
 
         mPubNub.addListener(new SubscribeCallback() {
             @Override
@@ -78,6 +82,7 @@ public class FireAlertService extends Service {
                 } else if (status.getCategory() == PNStatusCategory.PNConnectedCategory) {
                     // Connected to channel
                     Log.i("CONNECTED TO CHANNEL", "Yay!Connected to channel");
+                    createAlertNotification();
 
                 } else if (status.getCategory() == PNStatusCategory.PNReconnectedCategory) {
                     /**
@@ -94,9 +99,26 @@ public class FireAlertService extends Service {
             @Override
             public void message(PubNub pubnub, PNMessageResult message) {
                 receivedMessage = message.getMessage();
-                Log.i("Received Message", message.getMessage().toString());
 
+                if(message.getChannel() != null) {
+                    createAlertNotification();
+                } else {
+                    Log.v("WATERMELON", "watermelon!");
+                }
 
+                if(message.getChannel().equals(PubNubSingleton.BUZZER_CHANNEL)) {
+
+                } else if (message.getChannel().equals(PubNubSingleton.LED_ALARM_CHANNEL)) {
+
+                } else {
+
+                }
+
+                Log.i("Received Message", message.toString());
+
+                Log.i("MESSAGE CONTENT", message.getMessage()
+                        .getAsJsonObject()
+                        .get("message").getAsString());
             }
 
             @Override
@@ -172,7 +194,7 @@ public class FireAlertService extends Service {
             mBuilder = new android.support.v4.app.NotificationCompat.Builder(this);
         }
 
-        Intent notificationIntent = new Intent(this, MainActivity.class);
+        Intent notificationIntent = new Intent(this, ToolsActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(this,
                 0,
                 notificationIntent,

@@ -15,7 +15,7 @@ public class PubNubSingleton {
 
     public static PubNub mPubNub;
     public final static String LED_ALARM_CHANNEL = "alarm";
-    public final static String BUZZER_CHANNEL = "alert";
+    public final static String BUZZER_CHANNEL = "temperature";
     public final static String USER_SETTINGS_CHANNEL = "user_settings";
 
     private static JsonElement receivedMessageObject;
@@ -29,7 +29,7 @@ public class PubNubSingleton {
             PNConfiguration pnConfiguration = new PNConfiguration();
             pnConfiguration.setSubscribeKey("sub-c-0bbe0cb0-e2b6-11e8-a575-5ee09a206989");
             pnConfiguration.setPublishKey("pub-c-957647d4-c417-4a35-969f-95d00a04a33f");
-            pnConfiguration.setSecure(false);
+            pnConfiguration.setSecure(true);
 
             Log.i("PUBNUB INSTANCE", "Instance created");
 

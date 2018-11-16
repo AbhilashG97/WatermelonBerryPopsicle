@@ -1,4 +1,4 @@
-package abhilash.example.com.alertmelon.utitlity;
+package abhilash.example.com.alertmelon.utility;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

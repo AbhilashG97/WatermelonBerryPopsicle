@@ -8,7 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import java.util.ArrayList;
 
 import abhilash.example.com.alertmelon.R;
-import abhilash.example.com.alertmelon.logrecyclerview.LogItem;
+import abhilash.example.com.alertmelon.logrecyclerview.Temperature;
 import abhilash.example.com.alertmelon.logrecyclerview.LogListAdapter;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -19,7 +19,7 @@ public class LogsActivity extends AppCompatActivity {
     RecyclerView logRecyclerView;
 
     private LogListAdapter logListAdapter;
-    private ArrayList<LogItem> logItemList;
+    private ArrayList<Temperature> temperatureList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,13 +27,13 @@ public class LogsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_logs);
         ButterKnife.bind(this);
 
-        logItemList = new ArrayList<>();
+        temperatureList = new ArrayList<>();
 
         /**
-         * TODO: Deserialize logs from shared preferences and store it in logItemList
+         * TODO: Deserialize logs from shared preferences and store it in temperatureList
          */
 
-        logListAdapter = new LogListAdapter(logItemList);
+        logListAdapter = new LogListAdapter(temperatureList);
         logRecyclerView.setItemAnimator(new DefaultItemAnimator());
         logRecyclerView.setAdapter(logListAdapter);
     }

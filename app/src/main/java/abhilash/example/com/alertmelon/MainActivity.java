@@ -2,6 +2,8 @@ package abhilash.example.com.alertmelon;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -12,6 +14,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.github.mikephil.charting.animation.Easing;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+
+import java.util.ArrayList;
 
 import abhilash.example.com.alertmelon.activities.LogsActivity;
 import abhilash.example.com.alertmelon.activities.ToolsActivity;
@@ -31,6 +43,9 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
+    @BindView(R.id.chart_statistics)
+    LineChart lineChart;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,7 +53,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         ButterKnife.bind(this);
-
+        drawChart();
         startService(new Intent(this, FireAlertService.class));
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -49,6 +64,46 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.getMenu().getItem(0).setChecked(true);
 
+    }
+
+    public void drawChart() {
+
+        ArrayList<Entry> entries = new ArrayList<>();
+        entries.add(new Entry(60, 0));
+        entries.add(new Entry(48, 1));
+        entries.add(new Entry(70.5f, 2));
+        entries.add(new Entry(100, 3));
+        entries.add(new Entry(180.9f, 4));
+
+        LineDataSet set1;
+
+        // create a dataset and give it a type
+        set1 = new LineDataSet(entries, "Live Temperature");
+        set1.setFillAlpha(110);
+
+        set1.setColor(Color.BLACK);
+        set1.setCircleColor(Color.BLACK);
+        set1.setLineWidth(1f);
+        set1.setCircleRadius(3f);
+        set1.setDrawCircleHole(false);
+        set1.setValueTextSize(9f);
+        set1.setDrawFilled(true);
+
+        ArrayList<ILineDataSet> dataSets = new ArrayList<>();
+        dataSets.add(set1); // add the datasets
+
+
+        LineData lineData = new LineData(dataSets);
+        lineChart.setData(lineData);
+        Description description = new Description();
+        description.setText("Live Temperature");
+        lineChart.setDescription(description);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            lineChart.setDefaultFocusHighlightEnabled(true);
+        }
+        lineChart.animateX(2500, Easing.EasingOption.EaseInOutQuart);
+        lineChart.setDrawGridBackground(false);
+        lineChart.invalidate();
     }
 
     @Override

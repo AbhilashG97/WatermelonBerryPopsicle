@@ -9,9 +9,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -29,23 +32,31 @@ import abhilash.example.com.alertmelon.MainActivity;
 import abhilash.example.com.alertmelon.R;
 import abhilash.example.com.alertmelon.activities.NotificationActivity;
 import abhilash.example.com.alertmelon.activities.ToolsActivity;
+import abhilash.example.com.alertmelon.adapter.LogAdapter;
+import abhilash.example.com.alertmelon.adapter.TemperatureAdapter;
+import abhilash.example.com.alertmelon.logrecyclerview.Temperature;
 import abhilash.example.com.alertmelon.singleton.PubNubSingleton;
 
 public class FireAlertService extends Service {
 
+    public static final int NOTIFICATION_ID = 543;
     public static boolean isServiceRunning = false;
-    public static final int NOTIFICATION_ID=543;
     private PubNub mPubNub;
     private JsonElement receivedMessage;
+    private TemperatureAdapter temperatureAdapter;
+    private LogAdapter logAdapter;
 
     @Override
     public void onCreate() {
         mPubNub = PubNubSingleton.getInstance();
+        temperatureAdapter = TemperatureAdapter.getInstance();
+        logAdapter = LogAdapter.getInstance();
         addPubNubListener();
     }
 
     /**
      * Start service
+     *
      * @param intent
      * @param flags
      * @param startId
@@ -66,23 +77,29 @@ public class FireAlertService extends Service {
 
         Log.i("INSIDE PUBNUB LISTENER", "addPubNubListener() invoked");
 
-        mPubNub.subscribe().channels(Arrays.asList(PubNubSingleton.BUZZER_CHANNEL,
-                PubNubSingleton.LED_ALARM_CHANNEL, PubNubSingleton.USER_SETTINGS_CHANNEL))
-        .withPresence().execute();
+        mPubNub.subscribe().channels(Arrays.asList(PubNubSingleton.TEMPERATURE_CHANNEL,
+                PubNubSingleton.ALARM_CHANNEL, PubNubSingleton.USER_SETTINGS_CHANNEL))
+                .withPresence().execute();
 
         mPubNub.addListener(new SubscribeCallback() {
             @Override
             public void status(PubNub pubnub, PNStatus status) {
                 // Subscribe to channel
                 if (status.getCategory() == PNStatusCategory.PNUnexpectedDisconnectCategory) {
-                    /**
-                     * TODO: Handle event when radio/connectivity lost
-                     */
+                    Handler handler = new Handler(Looper.getMainLooper());
+                    handler.post(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(),
+                                    "Network connectivity lost!",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    });
                     Log.e("CONNECTION LOST", status.getCategory().toString());
                 } else if (status.getCategory() == PNStatusCategory.PNConnectedCategory) {
                     // Connected to channel
                     Log.i("CONNECTED TO CHANNEL", "Yay!Connected to channel");
-                    createAlertNotification();
 
                 } else if (status.getCategory() == PNStatusCategory.PNReconnectedCategory) {
                     /**
@@ -93,32 +110,47 @@ public class FireAlertService extends Service {
                      * TODO: Handle decryption event
                      */
                 }
-
             }
 
             @Override
             public void message(PubNub pubnub, PNMessageResult message) {
                 receivedMessage = message.getMessage();
 
-                if(message.getChannel() != null) {
+                Log.i("CHANNEL", message.getChannel());
+
+                if (message.getChannel().equals(PubNubSingleton.TEMPERATURE_CHANNEL)) {
+                    // Get temperature
+                    temperatureAdapter.getTemperatureList()
+                            .add(new Temperature(message.getMessage()
+                                    .getAsJsonObject()
+                                    .get("message").getAsString()));
+
+                    Log.i("TEMPERATURE CONTENT", message.getMessage()
+                            .getAsJsonObject()
+                            .get("message").getAsString());
+
+                } else if (message.getChannel().equals(PubNubSingleton.ALARM_CHANNEL)) {
+                    // Get alarm alert
                     createAlertNotification();
+                    Intent intent = new Intent("BUZZER_STATE")
+                            .putExtra("BUZZER", "ON");
+                    LocalBroadcastManager.getInstance(FireAlertService.this).sendBroadcast(intent);
+
+                    logAdapter.getLogList().add(message.getMessage()
+                            .getAsJsonObject()
+                            .get("temperature").getAsString());
+
+                    Log.i("ALARM CONTENT", message.getMessage()
+                            .getAsJsonObject()
+                            .get("temperature").getAsString());
                 } else {
-                    Log.v("WATERMELON", "watermelon!");
+                    // Disable Buzzer
+
                 }
 
-                if(message.getChannel().equals(PubNubSingleton.BUZZER_CHANNEL)) {
+                Log.i("ARRAYLIST", temperatureAdapter.getTemperatureList().toString());
 
-                } else if (message.getChannel().equals(PubNubSingleton.LED_ALARM_CHANNEL)) {
 
-                } else {
-
-                }
-
-                Log.i("Received Message", message.toString());
-
-                Log.i("MESSAGE CONTENT", message.getMessage()
-                        .getAsJsonObject()
-                        .get("message").getAsString());
             }
 
             @Override

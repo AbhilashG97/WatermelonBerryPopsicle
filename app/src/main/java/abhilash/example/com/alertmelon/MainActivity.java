@@ -27,6 +27,7 @@ import java.util.ArrayList;
 
 import abhilash.example.com.alertmelon.activities.LogsActivity;
 import abhilash.example.com.alertmelon.activities.ToolsActivity;
+import abhilash.example.com.alertmelon.adapter.TemperatureAdapter;
 import abhilash.example.com.alertmelon.services.FireAlertService;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -46,6 +47,8 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.chart_statistics)
     LineChart lineChart;
 
+    private TemperatureAdapter temperatureAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +58,8 @@ public class MainActivity extends AppCompatActivity
         ButterKnife.bind(this);
         drawChart();
         startService(new Intent(this, FireAlertService.class));
+
+        temperatureAdapter = TemperatureAdapter.getInstance();
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -103,6 +108,7 @@ public class MainActivity extends AppCompatActivity
         }
         lineChart.animateX(2500, Easing.EasingOption.EaseInOutQuart);
         lineChart.setDrawGridBackground(false);
+        lineChart.notifyDataSetChanged();
         lineChart.invalidate();
     }
 

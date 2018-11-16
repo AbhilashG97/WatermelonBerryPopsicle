@@ -14,8 +14,8 @@ import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult;
 public class PubNubSingleton {
 
     public static PubNub mPubNub;
-    public final static String LED_ALARM_CHANNEL = "alarm";
-    public final static String BUZZER_CHANNEL = "temperature";
+    public final static String ALARM_CHANNEL = "alarm";
+    public final static String TEMPERATURE_CHANNEL = "temperature";
     public final static String USER_SETTINGS_CHANNEL = "user_settings";
 
     private static JsonElement receivedMessageObject;

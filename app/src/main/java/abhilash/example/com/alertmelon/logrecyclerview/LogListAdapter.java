@@ -15,9 +15,9 @@ import butterknife.ButterKnife;
 
 public class LogListAdapter extends RecyclerView.Adapter<LogListAdapter.LogListViewHolder> {
 
-    private ArrayList<Temperature> temperatureList;
+    private ArrayList<String> temperatureList;
 
-    public LogListAdapter(ArrayList<Temperature> temperatureList) {
+    public LogListAdapter(ArrayList<String> temperatureList) {
         this.temperatureList = temperatureList;
     }
 
@@ -30,7 +30,7 @@ public class LogListAdapter extends RecyclerView.Adapter<LogListAdapter.LogListV
 
     @Override
     public void onBindViewHolder(@NonNull LogListViewHolder logListViewHolder, int position) {
-        logListViewHolder.logData.setText(temperatureList.get(position).getLogData());
+        logListViewHolder.logData.setText(temperatureList.get(position));
     }
 
     @Override

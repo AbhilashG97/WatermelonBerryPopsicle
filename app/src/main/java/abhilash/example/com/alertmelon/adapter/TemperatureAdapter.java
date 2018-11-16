@@ -6,21 +6,23 @@ import abhilash.example.com.alertmelon.logrecyclerview.Temperature;
 
 public class TemperatureAdapter {
 
-    private ArrayList<Temperature> temperatureList;
+    private static TemperatureAdapter temperatureAdapter;
+    private static ArrayList<Temperature> temperatureList = new ArrayList<>();
 
-    public TemperatureAdapter() {
+    private TemperatureAdapter() {
 
     }
 
-    public TemperatureAdapter(ArrayList<Temperature> temperatureList) {
-        this.temperatureList = temperatureList;
+    public static TemperatureAdapter getInstance() {
+        if(temperatureAdapter == null) {
+            temperatureAdapter = new TemperatureAdapter();
+            return temperatureAdapter;
+        }
+        return temperatureAdapter;
     }
 
     public ArrayList<Temperature> getTemperatureList() {
         return temperatureList;
     }
 
-    public void setTemperatureList(ArrayList<Temperature> temperatureList) {
-        this.temperatureList = temperatureList;
-    }
 }

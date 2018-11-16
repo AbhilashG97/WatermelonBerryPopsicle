@@ -1,5 +1,7 @@
 package abhilash.example.com.alertmelon.logrecyclerview;
 
+import androidx.annotation.NonNull;
+
 public class Temperature {
 
     private String logData;
@@ -20,4 +22,10 @@ public class Temperature {
         this.logData = logData;
     }
 
+
+    @NonNull
+    @Override
+    public String toString() {
+        return logData;
+    }
 }

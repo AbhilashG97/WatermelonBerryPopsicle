@@ -18,7 +18,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.google.gson.JsonElement;
 import com.pubnub.api.PubNub;
 import com.pubnub.api.callbacks.SubscribeCallback;
 import com.pubnub.api.enums.PNStatusCategory;
@@ -42,7 +41,6 @@ public class FireAlertService extends Service {
     public static final int NOTIFICATION_ID = 543;
     public static boolean isServiceRunning = false;
     private PubNub mPubNub;
-    private JsonElement receivedMessage;
     private TemperatureAdapter temperatureAdapter;
     private LogAdapter logAdapter;
 
@@ -114,8 +112,6 @@ public class FireAlertService extends Service {
 
             @Override
             public void message(PubNub pubnub, PNMessageResult message) {
-                receivedMessage = message.getMessage();
-
                 Log.i("CHANNEL", message.getChannel());
 
                 if (message.getChannel().equals(PubNubSingleton.TEMPERATURE_CHANNEL)) {
@@ -134,6 +130,7 @@ public class FireAlertService extends Service {
                     createAlertNotification();
                     Intent intent = new Intent("BUZZER_STATE")
                             .putExtra("BUZZER", "ON");
+
                     LocalBroadcastManager.getInstance(FireAlertService.this).sendBroadcast(intent);
 
                     logAdapter.getLogList().add(message.getMessage()
@@ -148,9 +145,8 @@ public class FireAlertService extends Service {
 
                 }
 
-                Log.i("ARRAYLIST", temperatureAdapter.getTemperatureList().toString());
-
-
+                Log.i("LIVE LIST TEMPERATURE", temperatureAdapter.getTemperatureList()
+                        .toString());
             }
 
             @Override
@@ -227,10 +223,13 @@ public class FireAlertService extends Service {
         }
 
         Intent notificationIntent = new Intent(this, ToolsActivity.class);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+                | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
         PendingIntent contentIntent = PendingIntent.getActivity(this,
                 0,
                 notificationIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
+                0);
 
         PendingIntent dismissIntent = NotificationActivity.getDismissIntent(1001,
                 this);
@@ -242,8 +241,7 @@ public class FireAlertService extends Service {
                 .setDefaults(NotificationCompat.DEFAULT_ALL)
                 .setTicker(getResources().getString(R.string.app_name))
                 .setContentText("Temperature has reached exceedingly high!")
-                .setOngoing(true)
-                .addAction(R.drawable.ic_notification_warning, "DISMISS", dismissIntent);
+                .addAction(R.drawable.ic_notification_warning, null, dismissIntent);
         notificationManager.notify(1001, mBuilder.build());
     }
 

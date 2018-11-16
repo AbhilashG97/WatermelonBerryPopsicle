@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
@@ -41,9 +42,11 @@ public class ToolsActivity extends AppCompatActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 String isBuzzerOn = intent.getStringExtra("BUZZER");
-
+                Log.i("BUZZER FROM INTENT", intent.getStringExtra("BUZZER"));
                 if (!isBuzzerOn.equals("ON")) {
                     buzzerSwitch.setClickable(false);
+                } else {
+
                 }
             }
         };
@@ -94,7 +97,7 @@ public class ToolsActivity extends AppCompatActivity {
 
                         }
                     });
-                    
+
                 } else {
                     // Buzzer is off, do nothing
                 }

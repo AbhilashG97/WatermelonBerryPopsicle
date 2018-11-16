@@ -22,7 +22,6 @@ public class Temperature {
         this.logData = logData;
     }
 
-
     @NonNull
     @Override
     public String toString() {

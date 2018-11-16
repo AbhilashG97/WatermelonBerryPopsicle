@@ -17,6 +17,10 @@ public class LogListAdapter extends RecyclerView.Adapter<LogListAdapter.LogListV
 
     private ArrayList<String> temperatureList;
 
+    public LogListAdapter() {
+        //Default constructor
+    }
+
     public LogListAdapter(ArrayList<String> temperatureList) {
         this.temperatureList = temperatureList;
     }

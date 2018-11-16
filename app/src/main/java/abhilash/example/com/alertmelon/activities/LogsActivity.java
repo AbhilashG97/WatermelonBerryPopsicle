@@ -3,8 +3,11 @@ package abhilash.example.com.alertmelon.activities;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
 
 import abhilash.example.com.alertmelon.R;
 import abhilash.example.com.alertmelon.adapter.LogAdapter;
@@ -28,21 +31,33 @@ public class LogsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_logs);
         ButterKnife.bind(this);
         tinyDB = new TinyDB(this);
+
+        initializeRecyclerView();
+    }
+
+    public void initializeRecyclerView() {
         logAdapter = LogAdapter.getInstance();
 
-        /**
-         * TODO: Deserialize logs from shared preferences and store it in temperatureList
-         */
+        //TODO: Deserialize logs from shared preferences and store it in temperatureList
+
+//        ArrayList<String> tempList = new ArrayList<>();
+//
+//        tempList.add("Log 1");
+//        tempList.add("Log 2");
+//        tempList.add("Log 3");
+//        tempList.add("Log 4");
+//        tempList.add("Log 5");
 
         if(logAdapter.getLogList().size() != 0) {
             tinyDB.putListString("Log list", logAdapter.getLogList());
             logListAdapter = new LogListAdapter(logAdapter.getLogList());
+            //logListAdapter = new LogListAdapter(tempList);
+            logListAdapter.notifyDataSetChanged();
         } else {
             Toast.makeText(this, "No Logs!", Toast.LENGTH_LONG).show();
         }
-
+        //logListAdapter = new LogListAdapter(tempList);
         logRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        logListAdapter.notifyDataSetChanged();
         logRecyclerView.setAdapter(logListAdapter);
     }
 

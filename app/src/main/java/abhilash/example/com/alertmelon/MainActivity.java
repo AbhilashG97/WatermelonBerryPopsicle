@@ -27,7 +27,7 @@ import java.util.ArrayList;
 
 import abhilash.example.com.alertmelon.activities.LogsActivity;
 import abhilash.example.com.alertmelon.activities.ToolsActivity;
-import abhilash.example.com.alertmelon.adapter.TemperatureAdapter;
+import abhilash.example.com.alertmelon.singleton.adapter.TemperatureAdapter;
 import abhilash.example.com.alertmelon.services.FireAlertService;
 import butterknife.BindView;
 import butterknife.ButterKnife;

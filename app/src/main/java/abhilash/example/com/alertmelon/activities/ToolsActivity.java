@@ -18,7 +18,7 @@ import com.pubnub.api.models.consumer.pubsub.PNMessageResult;
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult;
 
 import abhilash.example.com.alertmelon.R;
-import abhilash.example.com.alertmelon.singleton.PubNubSingleton;
+import abhilash.example.com.alertmelon.singleton.pubnub.PubNubSingleton;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 

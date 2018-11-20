@@ -1,4 +1,4 @@
-package abhilash.example.com.alertmelon.adapter;
+package abhilash.example.com.alertmelon.singleton.adapter;
 
 import java.util.ArrayList;
 

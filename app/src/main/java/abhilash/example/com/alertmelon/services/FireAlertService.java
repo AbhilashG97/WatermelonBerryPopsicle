@@ -31,10 +31,10 @@ import abhilash.example.com.alertmelon.MainActivity;
 import abhilash.example.com.alertmelon.R;
 import abhilash.example.com.alertmelon.activities.NotificationActivity;
 import abhilash.example.com.alertmelon.activities.ToolsActivity;
-import abhilash.example.com.alertmelon.adapter.LogAdapter;
-import abhilash.example.com.alertmelon.adapter.TemperatureAdapter;
 import abhilash.example.com.alertmelon.logrecyclerview.Temperature;
-import abhilash.example.com.alertmelon.singleton.PubNubSingleton;
+import abhilash.example.com.alertmelon.singleton.adapter.LogAdapter;
+import abhilash.example.com.alertmelon.singleton.adapter.TemperatureAdapter;
+import abhilash.example.com.alertmelon.singleton.pubnub.PubNubSingleton;
 
 public class FireAlertService extends Service {
 
@@ -128,6 +128,7 @@ public class FireAlertService extends Service {
                 } else if (message.getChannel().equals(PubNubSingleton.ALARM_CHANNEL)) {
                     // Get alarm alert
                     createAlertNotification();
+
                     Intent intent = new Intent("BUZZER_STATE")
                             .putExtra("BUZZER", "ON");
 
@@ -142,7 +143,6 @@ public class FireAlertService extends Service {
                             .get("temperature").getAsString());
                 } else {
                     // Disable Buzzer
-
                 }
 
                 Log.i("LIVE LIST TEMPERATURE", temperatureAdapter.getTemperatureList()

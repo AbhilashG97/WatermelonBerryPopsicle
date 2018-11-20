@@ -3,14 +3,11 @@ package abhilash.example.com.alertmelon.activities;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-
 import abhilash.example.com.alertmelon.R;
-import abhilash.example.com.alertmelon.adapter.LogAdapter;
+import abhilash.example.com.alertmelon.singleton.adapter.LogAdapter;
 import abhilash.example.com.alertmelon.logrecyclerview.LogListAdapter;
 import abhilash.example.com.alertmelon.utility.TinyDB;
 import butterknife.BindView;
